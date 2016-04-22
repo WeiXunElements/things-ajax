@@ -1,0 +1,644 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-ajax/iron-request.html">
+
+<link rel="import" href="../things-msg-box-behavior/things-msg-box-behavior.html">
+<link rel="import" href="../things-global-behavior/things-global-behavior.html">
+<link rel="import" href="../things-spinner/things-spinner-behavior.html">
+<link rel="import" href="things-resource-search-behavior.html">
+
+<!--
+The `things-ajax` element exposes network request functionality.
+    <things-ajax
+        auto
+        url="http://gdata.youtube.com/feeds/api/videos/"
+        params='{"alt":"json", "q":"chrome"}'
+        handle-as="json"
+        on-response="handleResponse"
+        debounce-duration="300"></things-ajax>
+With `auto` set to `true`, the element performs a request whenever
+its `url`, `params` or `body` properties are changed. Automatically generated
+requests will be debounced in the case that multiple attributes are changed
+sequentially.
+Note: The `params` attribute must be double quoted JSON.
+You can trigger a request explicitly by calling `generateRequest` on the
+element.
+@demo demo/index.html
+-->
+
+<script>
+  'use strict';
+
+  Polymer({
+    is: 'things-ajax',
+    /**
+     * Fired when a request is sent.
+     *
+     * @event things-ajax-request
+     */
+    /**
+     * Fired when a response is received.
+     *
+     * @event things-ajax-response
+     */
+    /**
+     * Fired when an error is received.
+     *
+     * @event things-ajax-error
+     */
+    hostAttributes: {
+      hidden: true
+    },
+
+    properties: {
+      /**
+       * The URL target of the request.
+       */
+      url: {
+        type: String,
+        readOnly: true,
+        computed: '_computeUrl(globals.baseUrl,resourceUrl)'
+      },
+      
+      /**
+       * An object that contains query parameters to be appended to the
+       * specified `url` when generating a request. If you wish to set the body
+       * content when making a POST request, you should use the `body` property
+       * instead.
+       */
+      params: {
+        type: Object,
+        value: function() {
+          return {};
+        }
+      },
+      
+      /**
+       * The HTTP method to use such as 'GET', 'POST', 'PUT', or 'DELETE'.
+       * Default is 'GET'.
+       */
+      method: {
+        type: String,
+        value: 'GET'
+      },
+      
+      /**
+       * HTTP request headers to send.
+       *
+       * Example:
+       *
+       *     <things-ajax
+       *         auto
+       *         url="http://somesite.com"
+       *         headers='{"X-Requested-With": "XMLHttpRequest"}'
+       *         handle-as="json"></things-ajax>
+       *
+       * Note: setting a `Content-Type` header here will override the value
+       * specified by the `contentType` property of this element.
+       */
+      headers: {
+        type: Object,
+        value: function() {
+          return {};
+        }
+      },
+      
+      /**
+       * Content type to use when sending data. If the `contentType` property
+       * is set and a `Content-Type` header is specified in the `headers`
+       * property, the `headers` property value will take precedence.
+       *
+       * Varies the handling of the `body` param.
+       */
+      contentType: {
+        type: String,
+        value: null
+      },
+      
+      /**
+       * Body content to send with the request, typically used with "POST"
+       * requests.
+       *
+       * If body is a string it will be sent unmodified.
+       *
+       * If Content-Type is set to a value listed below, then
+       * the body will be encoded accordingly.
+       *
+       *    * `content-type="application/json"`
+       *      * body is encoded like `{"foo":"bar baz","x":1}`
+       *    * `content-type="application/x-www-form-urlencoded"`
+       *      * body is encoded like `foo=bar+baz&x=1`
+       *
+       * Otherwise the body will be passed to the browser unmodified, and it
+       * will handle any encoding (e.g. for FormData, Blob, ArrayBuffer).
+       *
+       * @type (ArrayBuffer|ArrayBufferView|Blob|Document|FormData|null|string|undefined|Object)
+       */
+      body: {
+        type: Object,
+        value: null
+      },
+      
+      /**
+       * Toggle whether XHR is synchronous or asynchronous. Don't change this
+       * to true unless You Know What You Are Doing™.
+       */
+      sync: {
+        type: Boolean,
+        value: false
+      },
+      
+      /**
+       * Specifies what data to store in the `response` property, and
+       * to deliver as `event.detail.response` in `response` events.
+       *
+       * One of:
+       *
+       *    `text`: uses `XHR.responseText`.
+       *
+       *    `xml`: uses `XHR.responseXML`.
+       *
+       *    `json`: uses `XHR.responseText` parsed as JSON.
+       *
+       *    `arraybuffer`: uses `XHR.response`.
+       *
+       *    `blob`: uses `XHR.response`.
+       *
+       *    `document`: uses `XHR.response`.
+       */
+      handleAs: {
+        type: String,
+        value: 'json'
+      },
+      
+      /**
+       * Set the withCredentials flag on the request.
+       */
+      withCredentials: {
+        type: Boolean,
+        value: true
+      },
+      
+      /**
+       * Set the timeout flag on the request.
+       */
+      timeout: {
+        type: Number,
+        value: 0
+      },
+      
+      /**
+       * If true, automatically performs an Ajax request when either `url` or
+       * `params` changes.
+       */
+      auto: {
+        type: Boolean,
+        value: false
+      },
+      
+      /**
+       * If true, error messages will automatically be logged to the console.
+       */
+      verbose: {
+        type: Boolean,
+        value: false
+      },
+      
+      /**
+       * The most recent request made by this things-ajax element.
+       */
+      lastRequest: {
+        type: Object,
+        notify: true,
+        readOnly: true
+      },
+      
+      /**
+       * True while lastRequest is in flight.
+       */
+      loading: {
+        type: Boolean,
+        notify: true,
+        readOnly: true
+      },
+      
+      /**
+       * lastRequest's response.
+       *
+       * Note that lastResponse and lastError are set when lastRequest finishes,
+       * so if loading is true, then lastResponse and lastError will correspond
+       * to the result of the previous request.
+       *
+       * The type of the response is determined by the value of `handleAs` at
+       * the time that the request was generated.
+       *
+       * @type {Object}
+       */
+      lastResponse: {
+        type: Object,
+        notify: true,
+        readOnly: true
+      },
+      
+      /**
+       * lastRequest's error, if any.
+       *
+       * @type {Object}
+       */
+      lastError: {
+        type: Object,
+        notify: true,
+        readOnly: true
+      },
+      
+      /**
+       * An Array of all in-flight requests originating from this things-ajax
+       * element.
+       */
+      activeRequests: {
+        type: Array,
+        notify: true,
+        readOnly: true,
+        value: function() {
+          return [];
+        }
+      },
+      
+      /**
+       * Length of time in milliseconds to debounce multiple automatically generated requests.
+       */
+      debounceDuration: {
+        type: Number,
+        value: 10,
+        notify: true
+      },
+      
+      /**
+       * Prefix to be stripped from a JSON response before parsing it.
+       *
+       * In order to prevent an attack using CSRF with Array responses
+       * (http://haacked.com/archive/2008/11/20/anatomy-of-a-subtle-json-vulnerability.aspx/)
+       * many backends will mitigate this by prefixing all JSON response bodies
+       * with a string that would be nonsensical to a JavaScript parser.
+       *
+       */
+      jsonPrefix: {
+        type: String,
+        value: ''
+      },
+      
+      /**
+       * By default, these events do not bubble largely because the `error` event has special
+       * meaning in the window object. Setting this attribute will cause things-ajax's request,
+       * response, and error events to bubble to the window object.
+       */
+      bubbles: {
+        type: Boolean,
+        value: false
+      },
+
+      /**
+       * Elidom server와 연동을 고려한 동작 방식을 지원하는 지 여부.
+       * 값이 false인 경우는 기존 iron-ajax와 동일한 동작 방식.
+       * Elidom Server의 REST API 중에 검색 조건을 이용한 조회 서비스를 사용하려면 
+       * 반드시 querySupport를 true인 상태로 사용해야 하고 그렇지 않은 경우는 false로 사용한다.
+       * querySupport를 true로 설정하고 Things.ResourceSearchBehavior의 
+       * selectFields, queryFields, sortFields, page, limit 등의 파라미터를 설정하면 
+       * 검색 API 규격에 맞게 위 다섯개의 파라미터를 넘겨준다.
+       * 직접 변경하지 않아도 resourceAction 값이 'index'로 설정되면 querySupport값이 true로 변경된다.
+       * 기본값은 false
+       */
+      querySupport: {
+        type: Boolean,
+        value: false
+      },
+
+      /**
+       * Elidom Server에 호출하고자 하는 URL
+       * Basic URL을 빼고 나머지 URL만 설정해도 자동으로 Global 변수로 부터 Basic URL을 가져와서 채워준다.
+       * URL에 ID가 들어가야 하는 경우인데 ID가 동적으로 변경되어야 하는 경우 id가 들어가야 할 자리에 ':id' 형식으로 설정한다.
+       * ex) resources/:id
+       * 이 경우 resourceId 값을 설정하고 실행 도중에 resourceId가 변경이 되면 ':id'를 실제 resourceId 값으로 변경하여 호출한다.
+       */
+      resourceUrl: {
+        type: String
+      },
+
+      /**
+       * resourceId
+       * resourceUrl에 ':id'가 들어가 있다면 resourceId로 교체한다.
+       */
+      resourceId: {
+        type: String,
+        value: ''
+      },
+
+      /**
+       * 미리 정의된 Resource Action 
+       * Elidom Server의 REST API에서 정의된 액션을 설정만 하면 해당 액션에 대한 
+       * 나머지 설정(contentType, method 등)들을 자동으로 설정해준다.
+       * 지원하는 Resource Action은 다음과 같다. 따라서 아래 스펙과 맞지 않는다면 
+       * resourceAction을 설정하지 말고 각각 해당 설정(method, contentType)을 해준다.
+       *
+       * [action]             [method]    [contentType]                         [collection/member]
+       * 1. index              GET         application/x-www-form-urlencoded     collection
+       * 2. update_multiple    POST        application/json                      collection
+       * 3. create             POST        application/json                      collection
+       * 4. find               GET         application/x-www-form-urlencoded     member
+       * 5. update             PUT         application/json                      member
+       * 6. delete             DELETE      application/x-www-form-urlencoded     member
+       * 7. exist              GET         application/x-www-form-urlencoded     member
+       * 8. show_by_name       GET         application/x-www-form-urlencoded     
+       */
+      resourceAction: {
+        type: String,
+        observer: '_resourceActionChanged'
+      },
+
+      /**
+       * 각 resourceAction에 대해서 Method, ContentType에 대한 정보를 매핑한다.
+       */
+      _resourceActionMap: {
+        type: Array,
+        readonly: true,
+        value: [
+          { name: 'index',            method: 'GET',    contentType: 'application/x-www-form-urlencoded' },
+          { name: 'create',           method: 'POST',   contentType: 'application/json' },
+          { name: 'update',           method: 'PUT',    contentType: 'application/json' },
+          { name: 'delete',           method: 'DELETE', contentType: 'application/x-www-form-urlencoded' },
+          { name: 'find',             method: 'GET',    contentType: 'application/x-www-form-urlencoded' },
+          { name: 'exist',            method: 'GET',    contentType: 'application/x-www-form-urlencoded' },
+          { name: 'show_by_name',     method: 'GET',    contentType: 'application/x-www-form-urlencoded' },
+          { name: 'update_multiple',  method: 'GET',    contentType: 'application/json' } ]
+      },
+      
+      _boundHandleResponse: {
+        type: Function,
+        value: function() {
+          return this._handleResponse.bind(this);
+        }
+      }
+    },
+
+    observers: [
+      '_requestOptionsChanged(url, method, params.*, headers, contentType, ' +
+          'body, sync, handleAs, jsonPrefix, withCredentials, timeout, auto, resourceId)',
+      '_loadingChanged(loading)'
+    ],
+
+    behaviors: [
+      Things.GlobalBehavior,
+      Things.SpinnerBehavior,
+      Things.MsgBoxBehavior,
+      Things.ResourceSearchBehavior
+    ],
+
+    /**
+     * basicUrl과 resourceUrl로 url 생성 
+     */
+    _computeUrl: function(basicUrl, resourceUrl) {
+      return basicUrl + '/' + resourceUrl;
+    },
+
+    /**
+     * resourceAction이 변경되었을 경우
+     *
+     * @param {String} resourceAction
+     */
+    _resourceActionChanged: function(resourceAction) {
+      if(resourceAction == 'index') {
+        this.querySupport = true;
+      }
+
+      if(this.resourceAction && this.resourceAction.length > 0) {
+        var resAct = this.resourceAction;
+        var actionInfo = this._resourceActionMap.filter(function(item) { return resAct == item.name });
+        if(actionInfo && actionInfo.length > 0) {
+          this.method = actionInfo[0].method;
+          this.contentType = actionInfo[0].contentType;
+        }
+      }
+    },
+
+    /**
+     * The query string that should be appended to the `url`, serialized from
+     * the current value of `params`.
+     *
+     * @return {string}
+     */
+    get queryString () {
+      var queryParts = [];
+      var tempParams = null;
+
+      // Resource Mode이고 검색 조건으로 조회시에 파라미터 조작 
+      if(this.querySupport === true && this.resourceAction == 'index') {
+        tempParams = this.handleRequestParams(this.params);
+      } else {
+        tempParams = this.params;
+      }
+
+      var param = null;
+      var value = null;
+
+      for (param in tempParams) {
+        value = tempParams[param];
+        param = window.encodeURIComponent(param);
+
+        if (Array.isArray(value)) {
+          for (var i = 0; i < value.length; i++) {
+            queryParts.push(param + '=' + window.encodeURIComponent(value[i]));
+          }
+        } else if (value !== null) {
+          queryParts.push(param + '=' + window.encodeURIComponent(value));
+        } else {
+          queryParts.push(param);
+        }
+      }
+      
+      return queryParts.join('&');
+    },
+    
+    /**
+     * The `url` with query string (if `params` are specified), suitable for
+     * providing to an `iron-request` instance.
+     *
+     * @return {string}
+     */
+    get requestUrl() {
+      var queryString = this.queryString;
+      var tempUrl = this.url;
+
+      if(tempUrl && tempUrl.indexOf(':id') > 0 && this.resourceId) {
+        tempUrl = tempUrl.replace(':id', this.resourceId);
+      }
+
+      if(tempUrl.indexOf('http') != 0) {
+        if(this.get('globals.basicUrl')) {
+          tempUrl = this.get('globals.basicUrl') + '/' + tempUrl;
+        }
+      }      
+
+      if (queryString) {
+        var bindingChar = this.url.indexOf('?') >= 0 ? '&' : '?';
+        return tempUrl + bindingChar + queryString;
+      }
+      
+      return tempUrl;
+    },
+    
+    /**
+     * An object that maps header names to header values, first applying the
+     * the value of `Content-Type` and then overlaying the headers specified
+     * in the `headers` property.
+     *
+     * @return {Object}
+     */
+    get requestHeaders() {
+      var headers = {};
+      var contentType = this.contentType;
+      if (contentType == null && (typeof this.body === 'string')) {
+        contentType = 'application/x-www-form-urlencoded';
+      }
+      
+      if (contentType) {
+        headers['content-type'] = contentType;
+      }
+      
+      var header;
+      if (this.headers instanceof Object) {
+        for (header in this.headers) {
+          headers[header] = this.headers[header].toString();
+        }
+      }
+      
+      return headers;
+    },
+    
+    /**
+     * Request options suitable for generating an `iron-request` instance based
+     * on the current state of the `things-ajax` instance's properties.
+     *
+     * @return {{
+     *   url: string,
+     *   method: (string|undefined),
+     *   async: (boolean|undefined),
+     *   body: (ArrayBuffer|ArrayBufferView|Blob|Document|FormData|null|string|undefined|Object),
+     *   headers: (Object|undefined),
+     *   handleAs: (string|undefined),
+     *   jsonPrefix: (string|undefined),
+     *   withCredentials: (boolean|undefined)}}
+     */
+    toRequestOptions: function() {
+      return {
+        url: this.requestUrl || '',
+        method: this.method,
+        headers: this.requestHeaders,
+        body: this.body,
+        async: !this.sync,
+        handleAs: this.handleAs,
+        jsonPrefix: this.jsonPrefix,
+        withCredentials: this.withCredentials,
+        timeout: this.timeout
+      };
+    },
+    
+    /**
+     * Performs an AJAX request to the specified URL.
+     *
+     * @return {!IronRequestElement}
+     */
+    generateRequest: function() {
+      var request = /** @type {!IronRequestElement} */ (document.createElement('iron-request'));
+      var requestOptions = this.toRequestOptions();      
+      this.activeRequests.push(request);
+
+      request.completes.then(
+        this._boundHandleResponse
+      ).catch(
+        this._handleError.bind(this, request)
+      ).then(
+        this._discardRequest.bind(this, request)
+      );
+      
+      request.send(requestOptions);
+      this._setLastRequest(request);
+      this._setLoading(true);
+
+      this.fire('things-ajax-request', {
+        request: request,
+        options: requestOptions
+      }, {
+        bubbles: this.bubbles
+      });
+      
+      return request;
+    },
+    
+    _handleResponse: function(request) {
+      if (request === this.lastRequest) {
+        this._setLastResponse(request.response);
+        this._setLastError(null);
+        this._setLoading(false);
+      }
+
+      this.fire('things-ajax-response', request.response, { bubbles: this.bubbles });
+
+      // Show Toast Message
+      this.showToastMsg('Success');
+    },
+    
+    _handleError: function(request, error) {
+      if (this.verbose) {
+        console.error(error);
+      }
+      
+      if (request === this.lastRequest) {
+        this._setLastError({ request: request, error: error });
+        this._setLastResponse(null);
+        this._setLoading(false);
+      }
+
+      var response = request.xhr.response;
+
+      if(response.status == 401) {
+        this.handleUnauthorized(response);
+
+      } else {
+        this.fire('things-ajax-error', {
+          request: request,
+          error: error
+        }, {
+          bubbles: this.bubbles
+        });
+
+        this.openResponseError(response);
+      }      
+    },
+    
+    _discardRequest: function(request) {
+      var requestIndex = this.activeRequests.indexOf(request);
+      if (requestIndex > -1) {
+        this.activeRequests.splice(requestIndex, 1);
+      }
+    },
+    
+    _requestOptionsChanged: function() {
+      this.debounce('generate-request', function() {
+        if (this.url == null) return;
+        if (this.auto) this.generateRequest();
+      }, this.debounceDuration);
+    },
+
+    /**
+     * Loading 정보 변경시 핸들러 
+     * @param {Boolean} loading
+     */
+    _loadingChanged: function(loading) {
+      if(loading === false) {
+        this.stopSpinner();
+      } else if(loading === true) {
+        this.startSpinner();
+      }
+    }
+
+  });
+</script>
