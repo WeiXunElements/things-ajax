@@ -517,14 +517,22 @@ element.
      * Request options suitable for generating an `iron-request` instance based
      * on the current state of the `things-ajax` instance's properties.
      *
-     * @return {{
+     * @return 
+     *   {{
      *   url: string,
+     *   
      *   method: (string|undefined),
+     *   
      *   async: (boolean|undefined),
-     *   body: (ArrayBuffer|ArrayBufferView|Blob|Document|FormData|null|string|undefined|Object),
+     *   
+     *   body: (ArrayBuffer| ArrayBufferView| Blob| Document| FormData| null| string| undefined| Object),
+     *   
      *   headers: (Object|undefined),
+     *   
      *   handleAs: (string|undefined),
+     *   
      *   jsonPrefix: (string|undefined),
+     *   
      *   withCredentials: (boolean|undefined)}}
      */
     toRequestOptions: function() {

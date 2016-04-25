@@ -17,6 +17,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../../paper-input/paper-input.html">
   <link rel="import" href="../../paper-input/paper-textarea.html">
   <link rel="import" href="../../paper-styles/demo-pages.html">
+  <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+  <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
 
   <link rel="import" href="../../things-button/things-button.html">
   <link rel="import" href="../../things-spinner/things-spinner.html">
@@ -38,6 +40,44 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <body unresolved>
   <h1>Things Ajax</h1>
 
+  <template is="dom-bind" id="app">
+    <things-setting id="setting"></things-setting>
+
+    <things-spinner id="spinner"></things-spinner>
+
+    <section>
+      <h3>Things Ajax - Not Resource GET (List)</h3>
+      <no-resource-things-ajax></no-resource-things-ajax>
+    </section>
+
+    <section>
+      <h3>Things Ajax - Resource GET (List)</h3>
+      <list-things-ajax></list-things-ajax>
+    </section>
+
+    <section>
+      <h3>Things Ajax - Resource GET (One)</h3>
+      <one-things-ajax></one-things-ajax>
+    </section>
+
+    <section>
+      <h3>Things Ajax - Resource Create</h3>
+      <create-things-ajax></create-things-ajax>
+    </section>
+
+    <section>
+      <h3>Things Ajax - Resource Update</h3>
+      <update-things-ajax></update-things-ajax>
+    </section>
+
+    <section>
+      <h3>Things Ajax - Resource Delete</h3>
+      <delete-things-ajax></delete-things-ajax>
+    </section>
+
+    <paper-toast id="toast" class="Toast" duration="8000"></paper-toast>
+  </template>
+  
   <dom-module id="no-resource-things-ajax">
     <template>
       <things-ajax
@@ -548,45 +588,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
     </script>
   </dom-module>  
-
-
-  <template is="dom-bind" id="app">
-    <things-setting id="setting"></things-setting>
-
-    <things-spinner id="spinner"></things-spinner>
-
-    <section>
-      <h3>Things Ajax - Not Resource GET (List)</h3>
-      <no-resource-things-ajax></no-resource-things-ajax>
-    </section>
-
-    <section>
-      <h3>Things Ajax - Resource GET (List)</h3>
-      <list-things-ajax></list-things-ajax>
-    </section>
-
-    <section>
-      <h3>Things Ajax - Resource GET (One)</h3>
-      <one-things-ajax></one-things-ajax>
-    </section>
-
-    <section>
-      <h3>Things Ajax - Resource Create</h3>
-      <create-things-ajax></create-things-ajax>
-    </section>
-
-    <section>
-      <h3>Things Ajax - Resource Update</h3>
-      <update-things-ajax></update-things-ajax>
-    </section>
-
-    <section>
-      <h3>Things Ajax - Resource Delete</h3>
-      <delete-things-ajax></delete-things-ajax>
-    </section>
-
-    <paper-toast id="toast" class="Toast" duration="8000"></paper-toast>
-  </template>
 
 </body>
 </html>

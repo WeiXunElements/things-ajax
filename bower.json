@@ -32,6 +32,7 @@
     "paper-styles": "^1.1.4",
     "paper-checkbox": "^1.1.3",
     "things-button": "ThingsElements/things-button#^0.0.1",
-    "things-setting": "ThingsElements/things-setting#^0.0.2"
+    "things-setting": "ThingsElements/things-setting#^0.0.2",
+    "marked-element": "^1.1.3"
   }
 }
