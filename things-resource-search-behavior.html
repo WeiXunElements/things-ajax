@@ -7,8 +7,6 @@ window.Things = window.Things || {};
 /**
  * Things.ResourceSearchBehavior 리소스 검색시에 필요한 select fields, sort fields, query fields를 설정하고 서버에서 원하는 포맷에 맞춰 변경한다.
  *
- * @polymerBehavior Things.ResourceSearchBehavior
- * 
  * @demo demo/index.html
  */
 Things.ResourceSearchBehavior = {
@@ -30,7 +28,9 @@ Things.ResourceSearchBehavior = {
 		 */
 		sortFields: {
 			type: Array,
-			value:[]
+			value: function() {
+				return [];
+			}
 		},
 		
 		/**
@@ -40,7 +40,9 @@ Things.ResourceSearchBehavior = {
 		 */
 		queryFields: {
 			type: Array,
-			value:[]
+			value: function() {
+				return [];
+			}
 		},
 
 		/**
@@ -59,8 +61,11 @@ Things.ResourceSearchBehavior = {
 	},
 
 	/**
-	 * 서버에 보낼 파라미터를 재구성한다.
-	 * @param reqParams Ajax 요청 파라미터 
+	 * 서버에 보낼 파라미터를 재구성한다. 
+	 * 실제 서버에 요청시 이 함수에서 리턴된 파라미터가 날아간다.
+	 *
+	 * @param {Object} reqParams Ajax 요청 파라미터 
+	 * @return {Object} 재구성된 파라미터 
 	 */
 	handleRequestParams: function(reqParams) {
 		var newReqParams = {};

@@ -4,7 +4,7 @@
 <link rel="import" href="../things-msg-box-behavior/things-msg-box-behavior.html">
 <link rel="import" href="../things-global-behavior/things-global-behavior.html">
 <link rel="import" href="../things-spinner/things-spinner-behavior.html">
-<link rel="import" href="things-resource-search-behavior.html">
+<link rel="import" href="./things-resource-search-behavior.html">
 
 <!--
 The `things-ajax` element exposes network request functionality.
@@ -22,7 +22,7 @@ sequentially.
 Note: The `params` attribute must be double quoted JSON.
 You can trigger a request explicitly by calling `generateRequest` on the
 element.
-@demo demo/index.html
+@demo demo/demo-things-ajax.html
 -->
 
 <script>
@@ -368,7 +368,7 @@ element.
           { name: 'find',             method: 'GET',    contentType: 'application/x-www-form-urlencoded' },
           { name: 'exist',            method: 'GET',    contentType: 'application/x-www-form-urlencoded' },
           { name: 'show_by_name',     method: 'GET',    contentType: 'application/x-www-form-urlencoded' },
-          { name: 'update_multiple',  method: 'GET',    contentType: 'application/json' } ]
+          { name: 'update_multiple',  method: 'POST',   contentType: 'application/json' } ]
       },
       
       _boundHandleResponse: {
@@ -484,7 +484,7 @@ element.
       
       return tempUrl;
     },
-    
+
     /**
      * An object that maps header names to header values, first applying the
      * the value of `Content-Type` and then overlaying the headers specified
@@ -493,7 +493,12 @@ element.
      * @return {Object}
      */
     get requestHeaders() {
-      var headers = {};
+      var user = this.get('globals.user');
+      var headers = !user ? {} : { 
+        'X-Locale' : this.get('globals.locale') ? this.get('globals.locale') : 'en-US',
+        'X-Domain-Id' : user.domain_id 
+      };
+
       var contentType = this.contentType;
       if (contentType == null && (typeof this.body === 'string')) {
         contentType = 'application/x-www-form-urlencoded';
@@ -517,22 +522,14 @@ element.
      * Request options suitable for generating an `iron-request` instance based
      * on the current state of the `things-ajax` instance's properties.
      *
-     * @return 
-     *   {{
+     * @return {{
      *   url: string,
-     *   
      *   method: (string|undefined),
-     *   
      *   async: (boolean|undefined),
-     *   
-     *   body: (ArrayBuffer| ArrayBufferView| Blob| Document| FormData| null| string| undefined| Object),
-     *   
+     *   body: (ArrayBuffer|ArrayBufferView|Blob|Document|FormData|null|string|undefined|Object),
      *   headers: (Object|undefined),
-     *   
      *   handleAs: (string|undefined),
-     *   
      *   jsonPrefix: (string|undefined),
-     *   
      *   withCredentials: (boolean|undefined)}}
      */
     toRequestOptions: function() {
@@ -608,7 +605,7 @@ element.
       var response = request.xhr.response;
 
       if(response.status == 401) {
-        this.handleUnauthorized(response);
+        this.handleUnauthorized();
 
       } else {
         this.fire('things-ajax-error', {
