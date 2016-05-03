@@ -238,7 +238,16 @@ element.
         notify: true,
         readOnly: true
       },
-      
+      /**
+       * Response에서 받은 값아래에 어느 프로퍼티를 lastResponse로 반환할 것인지 결정하는 
+       * 프로퍼티, 없으면 Response그대로 반환한다.
+       *
+       * @type {String}
+       */
+      responseRoot: {
+        type: String,
+        notify: true
+      },
       /**
        * lastRequest's error, if any.
        *
@@ -580,7 +589,8 @@ element.
     
     _handleResponse: function(request) {
       if (request === this.lastRequest) {
-        this._setLastResponse(request.response);
+        var response = request.response[this.responseRoot]||request.response;
+        this._setLastResponse(response);
         this._setLastError(null);
         this._setLoading(false);
       }
