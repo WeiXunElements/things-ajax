@@ -618,14 +618,16 @@ element.
         this.handleUnauthorized();
 
       } else {
-        this.fire('things-ajax-error', {
+        var evt = this.fire('things-ajax-error', {
           request: request,
           error: error
         }, {
           bubbles: this.bubbles
         });
 
-        this.openResponseError(response);
+        if(!evt.cancelBubble) {
+          this.openResponseError(response);
+        }
       }      
     },
     
