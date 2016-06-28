@@ -614,6 +614,10 @@ element.
 
       var response = request.xhr.response;
 
+      if (!response) {
+        return;
+      }
+
       if(response.status == 401) {
         this.handleUnauthorized();
 
