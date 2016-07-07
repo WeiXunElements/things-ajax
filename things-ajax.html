@@ -589,8 +589,10 @@ element.
     
     _handleResponse: function(request) {
       if (request === this.lastRequest) {
-        var response = request.response[this.responseRoot]||request.response;
-        this._setLastResponse(response);
+        if (request.response) {
+          var response = request.response[this.responseRoot]||request.response;
+          this._setLastResponse(response);
+        }
         this._setLastError(null);
         this._setLoading(false);
       }
@@ -614,13 +616,8 @@ element.
 
       var response = request.xhr.response;
 
-      if (!response) {
-        return;
-      }
-
-      if(response.status == 401) {
+      if(response && response.status == 401) {
         this.handleUnauthorized();
-
       } else {
         var evt = this.fire('things-ajax-error', {
           request: request,
