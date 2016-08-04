@@ -599,8 +599,10 @@ element.
 
       this.fire('things-ajax-response', request.response, { bubbles: this.bubbles });
 
-      // Show Toast Message
-      this.showToastMsg('Success');
+      if(this.method != 'get' && this.method != 'GET') {
+        // Show Toast Message
+        this.showToastMsg('Success');
+      }
     },
     
     _handleError: function(request, error) {
