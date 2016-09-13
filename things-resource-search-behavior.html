@@ -51,14 +51,16 @@ Things.ResourceSearchBehavior = {
 		 * 현재 페이지 
 		 */
 		page: {
-			type: Number
+			type: Number,
+			notify: true
 		},
 
 		/**
 		 * 한 페이지에 표시될 페이지 수 
 		 */
 		limit: {
-			type: Number
+			type: Number,
+			value: 50
 		}
 	},
 
@@ -120,7 +122,7 @@ Things.ResourceSearchBehavior = {
 			}
 		}
 
-		return {input : JSON.stringify(input)};
+		return { input : JSON.stringify(input) };
 	}
 
 };
