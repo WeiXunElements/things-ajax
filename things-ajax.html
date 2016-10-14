@@ -405,7 +405,8 @@ element.
      * basicUrl과 resourceUrl로 url 생성 
      */
     _computeUrl: function(basicUrl, resourceUrl) {
-      return basicUrl + '/' + resourceUrl;
+      if(resourceUrl.indexOf('http://')>=0 ) return resourceUrl;
+      else return basicUrl + '/' + resourceUrl;
     },
 
     /**
@@ -596,7 +597,6 @@ element.
         this._setLastError(null);
         this._setLoading(false);
       }
-
       this.fire('things-ajax-response', request.response, { bubbles: this.bubbles });
 
       if(this.method != 'get' && this.method != 'GET') {
