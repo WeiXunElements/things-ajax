@@ -405,7 +405,7 @@ element.
      * baseUrl과 resourceUrl로 url 생성 
      */
     _computeUrl: function(baseUrl, resourceUrl) {
-      if(resourceUrl.toLowerCase().indexOf('http') != 0) return resourceUrl;
+      if(resourceUrl.toLowerCase().indexOf('http') == 0) return resourceUrl;
       else return baseUrl + '/' + resourceUrl;
     },
 
