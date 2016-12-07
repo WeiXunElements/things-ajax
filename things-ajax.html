@@ -323,7 +323,7 @@ element.
 
       /**
        * Elidom Server에 호출하고자 하는 URL
-       * Basic URL을 빼고 나머지 URL만 설정해도 자동으로 Global 변수로 부터 Basic URL을 가져와서 채워준다.
+       * Base URL을 빼고 나머지 URL만 설정해도 자동으로 Global 변수로 부터 Base URL을 가져와서 채워준다.
        * URL에 ID가 들어가야 하는 경우인데 ID가 동적으로 변경되어야 하는 경우 id가 들어가야 할 자리에 ':id' 형식으로 설정한다.
        * ex) resources/:id
        * 이 경우 resourceId 값을 설정하고 실행 도중에 resourceId가 변경이 되면 ':id'를 실제 resourceId 값으로 변경하여 호출한다.
@@ -402,11 +402,11 @@ element.
     ],
 
     /**
-     * basicUrl과 resourceUrl로 url 생성 
+     * baseUrl과 resourceUrl로 url 생성 
      */
-    _computeUrl: function(basicUrl, resourceUrl) {
-      if(resourceUrl.indexOf('http://')>=0 ) return resourceUrl;
-      else return basicUrl + '/' + resourceUrl;
+    _computeUrl: function(baseUrl, resourceUrl) {
+      if(resourceUrl.indexOf('http://')>=0 || resourceUrl.indexOf('http://')>=0 ) return resourceUrl;
+      else return baseUrl + '/' + resourceUrl;
     },
 
     /**
@@ -482,8 +482,8 @@ element.
       }
 
       if(tempUrl.indexOf('http') != 0) {
-        if(this.get('globals.basicUrl')) {
-          tempUrl = this.get('globals.basicUrl') + '/' + tempUrl;
+        if(this.get('globals.baseUrl')) {
+          tempUrl = this.get('globals.baseUrl') + '/' + tempUrl;
         }
       }      
 
