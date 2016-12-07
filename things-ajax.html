@@ -405,7 +405,7 @@ element.
      * baseUrl과 resourceUrl로 url 생성 
      */
     _computeUrl: function(baseUrl, resourceUrl) {
-      if(resourceUrl.indexOf('http://')>=0 || resourceUrl.indexOf('http://')>=0 ) return resourceUrl;
+      if(resourceUrl.toLowerCase().indexOf('http') != 0) return resourceUrl;
       else return baseUrl + '/' + resourceUrl;
     },
 
@@ -480,8 +480,8 @@ element.
       if(tempUrl && tempUrl.indexOf(':id') > 0 && this.resourceId) {
         tempUrl = tempUrl.replace(':id', this.resourceId);
       }
-
-      if(tempUrl.indexOf('http') != 0) {
+      
+      if(tempUrl.toLowerCase().indexOf('http') != 0) {
         if(this.get('globals.baseUrl')) {
           tempUrl = this.get('globals.baseUrl') + '/' + tempUrl;
         }
