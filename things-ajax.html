@@ -377,7 +377,8 @@ element.
           { name: 'find',             method: 'GET',    contentType: 'application/x-www-form-urlencoded' },
           { name: 'exist',            method: 'GET',    contentType: 'application/x-www-form-urlencoded' },
           { name: 'show_by_name',     method: 'GET',    contentType: 'application/x-www-form-urlencoded' },
-          { name: 'update_multiple',  method: 'POST',   contentType: 'application/json' } ]
+          { name: 'update_multiple',  method: 'POST',   contentType: 'application/json' } 
+        ]
       },
       
       _boundHandleResponse: {
@@ -503,11 +504,17 @@ element.
      * @return {Object}
      */
     get requestHeaders() {
-      var user = this.get('globals.user');
-      var headers = !user ? {} : { 
-        'X-Locale' : this.get('globals.locale') ? this.get('globals.locale') : 'en-US',
-        'X-Domain-Id' : user.domain_id 
-      };
+      var headers = {};
+
+      if(this.withCredentials) {
+        var user = this.get('globals.user');
+        if(user) {
+          headers = {
+            'X-Locale' : this.get('globals.locale') ? this.get('globals.locale') : (user.locale ? user.locale : ''),
+            'X-Domain-Id' : user.domain_id 
+          };
+        }
+      }
 
       var contentType = this.contentType;
       if (contentType == null && (typeof this.body === 'string')) {
@@ -518,9 +525,8 @@ element.
         headers['content-type'] = contentType;
       }
       
-      var header;
       if (this.headers instanceof Object) {
-        for (header in this.headers) {
+        for (var header in this.headers) {
           headers[header] = this.headers[header].toString();
         }
       }
@@ -659,6 +665,5 @@ element.
         this.startSpinner();
       }
     }
-
   });
 </script>
