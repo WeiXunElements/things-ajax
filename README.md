@@ -1,6 +1,6 @@
 # things-ajax
 
-An element providing a starting point for your own reusable Polymer elements.
+`things-ajax` element는 네트워크 요청 기능을 보여준다.
 
 
 ## Dependencies
@@ -21,11 +21,11 @@ If you wish to work on your element in isolation, we recommend that you use
 [Polyserve](https://github.com/PolymerLabs/polyserve) to keep your element's
 bower dependencies in line. You can install it via:
 
-    npm install -g polyserve
+    npm install -g polymer-cli
 
 And you can run it via:
 
-    polyserve
+    polymer serve
 
 Once running, you can preview your element at
 `http://localhost:8080/components/things-ajax/`, where `things-ajax` is the name of the directory containing it.

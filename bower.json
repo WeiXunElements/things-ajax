@@ -4,7 +4,7 @@
   "authors": [
     "Hatio Lab. <heartyoh@hatiolab.com>"
   ],
-  "description": "The `things-ajax` element exposes network request functionality.",
+  "description": "`things-ajax` element는 네트워크 요청 기능을 보여준다.",
   "keywords": [
     "web-component",
     "polymer",
