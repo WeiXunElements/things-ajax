@@ -5,19 +5,26 @@
 window.Things = window.Things || {};
 
 /**
- * Things.ResourceSearchBehavior 리소스 검색시에 필요한 select fields, sort fields, query fields를 설정하고 서버에서 원하는 포맷에 맞춰 변경한다.
+ * # Things.ResourceSearchBehavior
+ * ## 해당 Behavior는 Things Framework(Elidom Framework)의 조회에 맞게
+ *
+ * ### ko-kr
+ * `Things.ResourceSearchBehavior` 리소스 검색시에 필요한 select fields, sort fields, query fields를 설정하고 서버에서 원하는 포맷에 맞춰 변경한다.
  *
  * @polymerBehavior Things.ResourceSearchBehavior
- * 
+ *
  * @demo demo/index.html
  */
 Things.ResourceSearchBehavior = {
 
 	properties: {
 		/**
-		 * 검색하고자 하는 필드명을 구분자 ','로 구분하여 설정 
+		 * 검색하고자 하는 필드명을 구분자 ','로 구분하여 설정
 		 *
-		 * select fields - 'id,name,description,category'
+		 * select fields Ex)
+
+		 'id,name,description,category'
+		 ****
 		 */
 		selectFields: {
 			type: String,
@@ -25,8 +32,19 @@ Things.ResourceSearchBehavior = {
 
 		/**
 		 * 소팅하고자 하는 필드명과 ascending 여부, ascending인 경우 true, descending인 경우 false
-		 *
-		 * sort fields - [{ field : 'fieldName1', ascending : true }, { field : 'fieldName2', ascending : false }]
+		 * sort fields Ex)
+```
+[{
+	"field": "fieldName1",
+	"ascending": "true"
+	},
+	{
+	  "field": "fieldName2",
+	  "ascending": false
+	}
+]
+```
+		 ****
 		 */
 		sortFields: {
 			type: Array,
@@ -34,11 +52,25 @@ Things.ResourceSearchBehavior = {
 				return [];
 			}
 		},
-		
+
 		/**
 		 * 검색 조건 필드명과 조건 그리고 값 오브젝트에 대한 Array
 		 *
-		 * query fields - [{ name : 'name', operator : 'like', value : 'hatio' }, { field : 'active_field', value : true }]
+		 * query fields ex:)
+```
+[
+  {
+    "name": "name",
+    "operator": "like",
+    "value": "hatio"
+  },
+  {
+    "field": "active_field",
+    "value": true
+  }
+]
+```
+		 ****
 		 */
 		queryFields: {
 			type: Array,
@@ -48,7 +80,8 @@ Things.ResourceSearchBehavior = {
 		},
 
 		/**
-		 * 현재 페이지 
+		 * 현재 페이지
+		 ****
 		 */
 		page: {
 			type: Number,
@@ -57,7 +90,8 @@ Things.ResourceSearchBehavior = {
 		},
 
 		/**
-		 * 한 페이지에 표시될 페이지 수 
+		 * 한 페이지에 표시될 페이지 수
+		 ****
 		 */
 		limit: {
 			type: Number,
@@ -66,11 +100,12 @@ Things.ResourceSearchBehavior = {
 	},
 
 	/**
-	 * REST API 서비스를 제공하는 서버에 보낼 파라미터를 재구성한다. 
+	 * REST API 서비스를 제공하는 서버에 보낼 파라미터를 재구성한다.
 	 * 실제 서버에 요청시 이 함수에서 리턴된 파라미터가 날아간다.
+	 *****
+	 * @param {Object} reqParams Ajax 요청 파라미터
+	 * @return {Object} 재구성된 파라미터
 	 *
-	 * @param {Object} reqParams Ajax 요청 파라미터 
-	 * @return {Object} 재구성된 파라미터 
 	 */
 	handleRequestParams: function(reqParams) {
 		var newReqParams = {};
@@ -105,11 +140,11 @@ Things.ResourceSearchBehavior = {
 	},
 
 	/**
-	 * 커스텀 서비스를 제공하는 서버에 보낼 파라미터를 재구성한다. 
+	 * 커스텀 서비스를 제공하는 서버에 보낼 파라미터를 재구성한다.
 	 * 실제 서버에 요청시 이 함수에서 리턴된 파라미터가 날아간다.
-	 *
-	 * @param {Object} reqParams Ajax 요청 파라미터 
-	 * @return {Object} 재구성된 파라미터 
+	 *****
+	 * @param {Object} reqParams Ajax 요청 파라미터
+	 * @return {Object} 재구성된 파라미터
 	 */
 	handleDiyRequestParams: function(reqParams) {
 		var input = {};
