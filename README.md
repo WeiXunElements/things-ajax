@@ -1,61 +1,53 @@
 # things-ajax
+## 1.설명
+### 해당 컴포넌트는 xhr request를 하는 기능
+### ko-kr
 
-`things-ajax` element는 네트워크 요청 기능을 보여준다.
+```html
+    <things-ajax
+        auto
+        url="http://gdata.youtube.com/feeds/api/videos/"
+        params='{"alt":"json", "q":"chrome"}'
+        handle-as="json"
+        on-response="handleResponse"
+        debounce-duration="300"></things-ajax>
+```
+'auto'가 'true'로 세팅되면, 이 element는 'url', 'params', 'body'등이 변하면 request을 한다.</br>
+자동적으로 생성된 요청들은 다수의 속성들이 순차적으로 변화되어지는 경우에 request가 여러번 순차적으로 발생이 된다.
 
+  * _Note: 'params'속성은 " "로 된 JSON을 해야만한다. element에서 'generateRequest'를 호출함으로써 한 요청을 발생 시킬 수 있다._
 
-## Dependencies
+## 2. 개발
+### 2.1 Polymer-CLI 설치
 
-Element dependencies are managed via [Bower](http://bower.io/). You can
-install that via:
+First, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polymer-cli) installed. Then run `polymer serve` to serve your application locally.
 
-    npm install -g bower
+### 2.2 Application 수행
 
-Then, go ahead and download the element's dependencies:
+```
+$ polymer serve
+```
 
-    bower install
+### 2.3 Application 빌드
 
+```
+$ polymer build
+```
 
-## Playing With Your Element
+아래 명령어로 ` build/bundled`나 ` build/unbundled`에서 서버를 띄울수 있다.
 
-If you wish to work on your element in isolation, we recommend that you use
-[Polyserve](https://github.com/PolymerLabs/polyserve) to keep your element's
-bower dependencies in line. You can install it via:
+```
+$ polymer serve build/bundled
+```
 
-    npm install -g polymer-cli
+### 2.3 Running Tests
 
-And you can run it via:
+```
+$ polymer test
+```
 
-    polymer serve
-
-Once running, you can preview your element at
-`http://localhost:8080/components/things-ajax/`, where `things-ajax` is the name of the directory containing it.
-
-
-## Testing Your Element
-
-Simply navigate to the `/test` directory of your element to run its tests. If
-you are using Polyserve: `http://localhost:8080/components/things-ajax/test/`
-
-### web-component-tester
-
-The tests are compatible with [web-component-tester](https://github.com/Polymer/web-component-tester).
-Install it via:
-
-    npm install -g web-component-tester
-
-Then, you can run your tests on _all_ of your local browsers via:
-
-    wct
-
-#### WCT Tips
-
-`wct -l chrome` will only run tests in chrome.
-
-`wct -p` will keep the browsers alive after test runs (refresh to re-run).
-
-`wct test/some-file.html` will test only the files you specify.
-
-
-## Yeoman support
-
-If you'd like to use Yeoman to scaffold your element that's possible. The official [`generator-polymer`](https://github.com/yeoman/generator-polymer) generator has a [`seed`](https://github.com/yeoman/generator-polymer#seed) subgenerator.
+테스트는 [web-component-tester](https://github.com/Polymer/web-component-tester)에서 설명한데로 설정완료됨.
+아래 명령어로 테스트를 수행할 수 있다.
+```
+$ polymer test
+```
