@@ -804,7 +804,8 @@ sequentially.
                     request: request,
                     error: error
                 }, {
-                    bubbles: this.bubbles
+                    bubbles: this.bubbles,
+                    cancelable: true
                 });
 
                 if (!evt.defaultPrevented) {
