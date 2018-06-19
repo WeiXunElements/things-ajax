@@ -774,10 +774,10 @@ sequentially.
           request: request,
           error: error
         }, {
-          bubbles: this.bubbles
+          bubbles: this.bubbles,
+          cancelable: true
         });
-
-        if(!evt.cancelBubble) {
+        if(!evt.defaultPrevented) {
           this.openResponseError(response);
         }
       }
