@@ -771,13 +771,16 @@ sequentially.
                 this._setLastError(null);
                 this._setLoading(false);
             }
-            this.fire('things-ajax-response', request.response, {
-                bubbles: this.bubbles
+            var evt = this.fire('things-ajax-response', request.response, {
+                bubbles: this.bubbles,
+                cancelable: true
             });
 
-            if (this.method != 'get' && this.method != 'GET') {
-                // Show Toast Message
-                this.showToastMsg(Things.DataGlobal.t('text.success'));
+            if (!evt.defaultPrevented) {
+                if (this.method != 'get' && this.method != 'GET') {
+                    // Show Toast Message
+                    this.showToastMsg(Things.DataGlobal.t('text.success'));
+                }
             }
         },
 
