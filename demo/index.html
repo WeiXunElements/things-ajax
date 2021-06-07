@@ -1,589 +1,571 @@
 <!--
 @license
-Copyright © HatioLab Inc. All rights reserved.
+Copyright © 2015-2021 Shenzhen Weixun All rights reserved.
 -->
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head>
+  <head>
+    <title>things-ajax</title>
 
-  <title>things-ajax</title>
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="../../paper-checkbox/paper-checkbox.html" />
+    <link rel="import" href="../../paper-input/paper-input.html" />
+    <link rel="import" href="../../paper-input/paper-textarea.html" />
+    <link rel="import" href="../../paper-styles/demo-pages.html" />
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html" />
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html" />
 
-  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-  <link rel="import" href="../../paper-checkbox/paper-checkbox.html">
-  <link rel="import" href="../../paper-input/paper-input.html">
-  <link rel="import" href="../../paper-input/paper-textarea.html">
-  <link rel="import" href="../../paper-styles/demo-pages.html">
-  <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
-  <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../things-button/things-button.html" />
+    <link rel="import" href="../../things-spinner/things-spinner.html" />
+    <link rel="import" href="../../things-setting/things-setting.html" />
+    <link rel="import" href="../things-ajax.html" />
 
-  <link rel="import" href="../../things-button/things-button.html">
-  <link rel="import" href="../../things-spinner/things-spinner.html">
-  <link rel="import" href="../../things-setting/things-setting.html">
-  <link rel="import" href="../things-ajax.html">
+    <style>
+      iron-image {
+        background-color: lightgray;
+        margin: 1em;
+      }
+      .horizontal-section {
+        max-width: 300px;
+        margin-bottom: 24px;
+      }
+    </style>
+  </head>
 
-  <style>
-    iron-image {
-      background-color: lightgray;
-      margin: 1em;
-    }
-    .horizontal-section {
-      max-width: 300px;
-      margin-bottom: 24px;
-    }
-  </style>
-</head>
+  <body unresolved>
+    <h1>Things Ajax</h1>
 
-<body unresolved>
-  <h1>Things Ajax</h1>
+    <template is="dom-bind" id="app">
+      <things-setting id="setting"></things-setting>
 
-  <template is="dom-bind" id="app">
-    <things-setting id="setting"></things-setting>
+      <things-spinner id="spinner"></things-spinner>
 
-    <things-spinner id="spinner"></things-spinner>
+      <section>
+        <h3>Things Ajax - Not Resource GET (List)</h3>
+        <no-resource-things-ajax></no-resource-things-ajax>
+      </section>
 
-    <section>
-      <h3>Things Ajax - Not Resource GET (List)</h3>
-      <no-resource-things-ajax></no-resource-things-ajax>
-    </section>
+      <section>
+        <h3>Things Ajax - Resource GET (List)</h3>
+        <list-things-ajax></list-things-ajax>
+      </section>
 
-    <section>
-      <h3>Things Ajax - Resource GET (List)</h3>
-      <list-things-ajax></list-things-ajax>
-    </section>
+      <section>
+        <h3>Things Ajax - Resource GET (One)</h3>
+        <one-things-ajax></one-things-ajax>
+      </section>
 
-    <section>
-      <h3>Things Ajax - Resource GET (One)</h3>
-      <one-things-ajax></one-things-ajax>
-    </section>
+      <section>
+        <h3>Things Ajax - Resource Create</h3>
+        <create-things-ajax></create-things-ajax>
+      </section>
 
-    <section>
-      <h3>Things Ajax - Resource Create</h3>
-      <create-things-ajax></create-things-ajax>
-    </section>
+      <section>
+        <h3>Things Ajax - Resource Update</h3>
+        <update-things-ajax></update-things-ajax>
+      </section>
 
-    <section>
-      <h3>Things Ajax - Resource Update</h3>
-      <update-things-ajax></update-things-ajax>
-    </section>
+      <section>
+        <h3>Things Ajax - Resource Delete</h3>
+        <delete-things-ajax></delete-things-ajax>
+      </section>
 
-    <section>
-      <h3>Things Ajax - Resource Delete</h3>
-      <delete-things-ajax></delete-things-ajax>
-    </section>
-
-    <paper-toast id="toast" class="Toast" duration="8000"></paper-toast>
-  </template>
+      <paper-toast id="toast" class="Toast" duration="8000"></paper-toast>
+    </template>
 
     <dom-module id="no-resource-things-ajax">
-    <template>
-      <things-ajax
-        id="list-ajax"
-        auto="{{auto}}"
-        resource-url="{{resourceUrl}}"
-        query-support="{{querySupport}}"
-        method="GET"
-        content-type="application/x-www-form-urlencoded"
-        page=1
-        limit=10
-        select-fields="id,locale,category,name,display"
-        query-fields='[{"name" : "locale", "value" : "ko-KR"}, {"name" : "category", "value" : "button"}]'
-        sort-fields='[{"field" : "name", "ascending" : false}]'
-        last-response="{{ajaxResponse}}">
-      </things-ajax>
+      <template>
+        <things-ajax
+          id="list-ajax"
+          auto="{{auto}}"
+          resource-url="{{resourceUrl}}"
+          query-support="{{querySupport}}"
+          method="GET"
+          content-type="application/x-www-form-urlencoded"
+          page="1"
+          limit="10"
+          select-fields="id,locale,category,name,display"
+          query-fields='[{"name" : "locale", "value" : "ko-KR"}, {"name" : "category", "value" : "button"}]'
+          sort-fields='[{"field" : "name", "ascending" : false}]'
+          last-response="{{ajaxResponse}}"
+        >
+        </things-ajax>
 
-      <form>
-        <paper-button raised on-tap="invoke">invoke</paper-button>
-        <paper-button raised on-tap="reset">reset</paper-button>
-        <paper-checkbox checked="{{auto}}" class="green">Auto</paper-checkbox>
-        <paper-checkbox checked="{{querySupport}}" class="green">Query Support</paper-checkbox>
+        <form>
+          <paper-button raised on-tap="invoke">invoke</paper-button>
+          <paper-button raised on-tap="reset">reset</paper-button>
+          <paper-checkbox checked="{{auto}}" class="green">Auto</paper-checkbox>
+          <paper-checkbox checked="{{querySupport}}" class="green">Query Support</paper-checkbox>
 
-        <paper-input label="Resource URL" value="{{resourceUrl::change}}">
-        </paper-input>
+          <paper-input label="Resource URL" value="{{resourceUrl::change}}"> </paper-input>
 
-        <paper-textarea label="List Result" value="{{resultJson}}" rows=4>
-        </paper-textarea>
-      </form>
-    </template>
+          <paper-textarea label="List Result" value="{{resultJson}}" rows="4"> </paper-textarea>
+        </form>
+      </template>
 
-    <script>
-      Polymer({
-        is: 'no-resource-things-ajax',
+      <script>
+        Polymer({
+          is: 'no-resource-things-ajax',
 
-        properties: {
+          properties: {
+            auto: {
+              type: Boolean,
+              value: false,
+            },
 
-          auto: {
-            type: Boolean,
-            value: false
+            querySupport: {
+              type: Boolean,
+              value: false,
+            },
+
+            resourceUrl: {
+              type: String,
+              value: 'terminologies',
+            },
+
+            ajaxResponse: {
+              type: Object,
+              observer: '_responseChanged',
+            },
+
+            resultJson: {
+              type: String,
+            },
           },
 
-          querySupport: {
-            type: Boolean,
-            value: false
+          invoke: function () {
+            this.$['list-ajax'].generateRequest();
           },
 
-          resourceUrl : {
-            type: String,
-            value: 'terminologies'
+          reset: function () {
+            this.resultJson = '';
           },
 
-          ajaxResponse: {
-            type: Object,
-            observer: '_responseChanged'
-          },
-
-          resultJson: {
-            type: String
-          }
-        },
-
-        invoke: function() {
-          this.$['list-ajax'].generateRequest();
-        },
-
-        reset: function() {
-          this.resultJson = '';
-        },
-
-        _responseChanged: function(ajaxResponse) {
-          if(ajaxResponse && ajaxResponse.items) {
-            this.resultJson = JSON.stringify(ajaxResponse.items, null, 4);
-          } else {
-            this.reset();
-          }
-        }
-      });
-    </script>
-  </dom-module>
-
-  <dom-module id="list-things-ajax">
-    <template>
-      <things-ajax
-        id="list-ajax"
-        auto="{{auto}}"
-        resource-url="{{resourceUrl}}"
-        resource-action="index"
-        page=1
-        limit=10
-        select-fields="id,locale,category,name,display"
-        query-fields='[{"name" : "locale", "value" : "ko-KR"}, {"name" : "category", "value" : "button"}]'
-        sort-fields='[{"field" : "name", "ascending" : false}]'
-        last-response="{{ajaxResponse}}">
-      </things-ajax>
-
-      <form>
-        <paper-button raised on-tap="invoke">invoke</paper-button>
-        <paper-button raised on-tap="reset">reset</paper-button>
-        <paper-checkbox checked="{{auto}}" class="green">Auto</paper-checkbox>
-
-        <paper-input label="Resource URL" value="{{resourceUrl::change}}">
-        </paper-input>
-
-        <paper-textarea label="List Result" value="{{resultJson}}" rows=4>
-        </paper-textarea>
-      </form>
-    </template>
-
-    <script>
-      Polymer({
-        is: 'list-things-ajax',
-
-        properties: {
-
-          auto: {
-            type: Boolean,
-            value: false
-          },
-
-          resourceUrl : {
-            type: String,
-            value: 'terminologies'
-          },
-
-          ajaxResponse: {
-            type: Object,
-            observer: '_responseChanged'
-          },
-
-          resultJson: {
-            type: String
-          }
-        },
-
-        invoke: function() {
-          this.$['list-ajax'].generateRequest();
-        },
-
-        reset: function() {
-          this.resultJson = '';
-        },
-
-        _responseChanged: function(ajaxResponse) {
-          if(ajaxResponse && ajaxResponse.items) {
-            this.resultJson = JSON.stringify(ajaxResponse.items, null, 4);
-          } else {
-            this.reset();
-          }
-        }
-      });
-    </script>
-  </dom-module>
-
-  <dom-module id="one-things-ajax">
-    <template>
-      <things-ajax
-        id="ajax"
-        auto="{{auto}}"
-        resource-url="{{resourceUrl}}"
-        resource-action="find"
-        resource-id="{{resourceId}}"
-        last-response="{{ajaxResponse}}">
-      </things-ajax>
-
-      <form>
-        <paper-button raised on-tap="invoke">invoke</paper-button>
-        <paper-button raised on-tap="reset">reset</paper-button>
-        <paper-checkbox checked="{{auto}}" class="green">Auto</paper-checkbox>
-
-        <paper-input label="Resource URL" value="{{resourceUrl::change}}">
-        </paper-input>
-
-        <paper-input label="Resource ID" value="{{resourceId::change}}">
-        </paper-input>        
-
-        <paper-textarea label="One Result" value="{{resultJson}}" rows=4>
-        </paper-textarea>
-      </form>
-    </template>
-
-    <script>
-      Polymer({
-        is: 'one-things-ajax',
-
-        properties: {
-
-          auto: {
-            type: Boolean,
-            value: true
-          },
-
-          resourceUrl : {
-            type: String,
-            value: 'terminologies/:id'
-          },
-
-          resourceId: {
-            type: String,
-            value: '1'
-          },
-
-          ajaxResponse: {
-            type: Object,
-            observer: '_responseChanged'
-          },
-
-          resultJson: {
-            type: String
-          }
-        },
-
-        invoke: function() {
-          if(this.resourceId && this.resourceId.length > 0) {
-            this.$.ajax.generateRequest();
-          } else {
-            this.resultJson = 'Invalid Resource ID';
-          }
-        },
-
-        reset: function() {
-          this.resultJson = '';
-        },
-
-        _responseChanged: function(ajaxResponse) {
-          if(ajaxResponse) {
-            this.resultJson = JSON.stringify(ajaxResponse, null, 4);
-          } else {
-            this.reset();
-          }
-        }
-      });
-    </script>
-  </dom-module>  
-
-  <dom-module id="create-things-ajax">
-    <template>
-      <things-ajax
-        id="ajax"
-        resource-url="{{resourceUrl}}"
-        resource-action="create"
-        body="{{createJson}}"
-        last-response="{{ajaxResponse}}">
-      </things-ajax>
-
-      <form>
-        <paper-button raised on-tap="invoke">invoke</paper-button>
-        <paper-button raised on-tap="reset">reset</paper-button>
-
-        <paper-input label="Resource URL" value="{{resourceUrl::change}}">
-        </paper-input>
-
-        <paper-textarea label="Create Data" value="{{createJson::change}}" rows=4>
-        </paper-textarea>
-
-        <paper-textarea label="Create Result" value="{{resultJson}}" rows=4>
-        </paper-textarea>
-      </form>
-    </template>
-
-    <script>
-      Polymer({
-        is: 'create-things-ajax',
-
-        properties: {
-
-          resourceUrl : {
-            type: String,
-            value: 'terminologies'
-          },
-
-          createJson: {
-            type: String,
-            value: "{\n}"
-          },
-
-          resultJson: {
-            type: String
-          },
-
-          ajaxResponse: {
-            type: Object,
-            observer: '_responseChanged'
-          }
-        },
-
-        invoke: function() {
-          if(this.createJson && this.createJson.length >= 10) {
-            try {
-              JSON.parse(this.createJson);
-              this.$.ajax.generateRequest();
-            } catch(e) {
-              this.resultJson = "Error - Invalid JSON - " + e;
+          _responseChanged: function (ajaxResponse) {
+            if (ajaxResponse && ajaxResponse.items) {
+              this.resultJson = JSON.stringify(ajaxResponse.items, null, 4);
+            } else {
+              this.reset();
             }
-          } else {
-            this.resultJson = "Error - Empty JSON";
-          }
-        },
+          },
+        });
+      </script>
+    </dom-module>
 
-        reset: function() {
-          this.resultJson = '';
-        },
+    <dom-module id="list-things-ajax">
+      <template>
+        <things-ajax
+          id="list-ajax"
+          auto="{{auto}}"
+          resource-url="{{resourceUrl}}"
+          resource-action="index"
+          page="1"
+          limit="10"
+          select-fields="id,locale,category,name,display"
+          query-fields='[{"name" : "locale", "value" : "ko-KR"}, {"name" : "category", "value" : "button"}]'
+          sort-fields='[{"field" : "name", "ascending" : false}]'
+          last-response="{{ajaxResponse}}"
+        >
+        </things-ajax>
 
-        _responseChanged: function(ajaxResponse) {
-          if(ajaxResponse) {
-            this.resultJson = JSON.stringify(ajaxResponse, null, 4);
-          } else {
-            this.reset();
-          }
-        }
-      });
-    </script>
-  </dom-module>
+        <form>
+          <paper-button raised on-tap="invoke">invoke</paper-button>
+          <paper-button raised on-tap="reset">reset</paper-button>
+          <paper-checkbox checked="{{auto}}" class="green">Auto</paper-checkbox>
 
-  <dom-module id="update-things-ajax">
-    <template>
-      <things-ajax
-        id="get-ajax"
-        resource-url="{{resourceUrl}}"
-        resource-action="get"
-        resource-id="{{resourceId}}"
-        last-response="{{responseGet}}">
-      </things-ajax>
+          <paper-input label="Resource URL" value="{{resourceUrl::change}}"> </paper-input>
 
-      <things-ajax
-        id="put-ajax"
-        resource-url="{{resourceUrl}}"
-        resource-action="update"
-        resource-id="{{resourceId}}"
-        body="{{updateJson}}"
-        last-response="{{responsePut}}">
-      </things-ajax>
+          <paper-textarea label="List Result" value="{{resultJson}}" rows="4"> </paper-textarea>
+        </form>
+      </template>
 
-      <form>
-        <paper-button raised on-tap="get">get</paper-button>
-        <paper-button raised on-tap="update">update</paper-button>
-        <paper-button raised on-tap="reset">reset</paper-button>
+      <script>
+        Polymer({
+          is: 'list-things-ajax',
 
-        <paper-input label="Resource URL" value="{{resourceUrl::change}}">
-        </paper-input>
+          properties: {
+            auto: {
+              type: Boolean,
+              value: false,
+            },
 
-        <paper-input label="Resource Id" value="{{resourceId::change}}">
-        </paper-input>        
+            resourceUrl: {
+              type: String,
+              value: 'terminologies',
+            },
 
-        <paper-textarea label="Found Data" value="{{updateJson::change}}" rows=4>
-        </paper-textarea>
+            ajaxResponse: {
+              type: Object,
+              observer: '_responseChanged',
+            },
 
-        <paper-textarea label="Update Result" value="{{resultJson::change}}" rows=4>
-        </paper-textarea>
-      </form>
-    </template>
-
-    <script>
-      Polymer({
-        is: 'update-things-ajax',
-
-        properties: {
-
-          resourceUrl : {
-            type: String,
-            value: 'terminologies/:id'
+            resultJson: {
+              type: String,
+            },
           },
 
-          resourceId: {
-            type: String
+          invoke: function () {
+            this.$['list-ajax'].generateRequest();
           },
 
-          updateJson: {
-            type: String
+          reset: function () {
+            this.resultJson = '';
           },
 
-          resultJson: {
-            type: String
+          _responseChanged: function (ajaxResponse) {
+            if (ajaxResponse && ajaxResponse.items) {
+              this.resultJson = JSON.stringify(ajaxResponse.items, null, 4);
+            } else {
+              this.reset();
+            }
+          },
+        });
+      </script>
+    </dom-module>
+
+    <dom-module id="one-things-ajax">
+      <template>
+        <things-ajax
+          id="ajax"
+          auto="{{auto}}"
+          resource-url="{{resourceUrl}}"
+          resource-action="find"
+          resource-id="{{resourceId}}"
+          last-response="{{ajaxResponse}}"
+        >
+        </things-ajax>
+
+        <form>
+          <paper-button raised on-tap="invoke">invoke</paper-button>
+          <paper-button raised on-tap="reset">reset</paper-button>
+          <paper-checkbox checked="{{auto}}" class="green">Auto</paper-checkbox>
+
+          <paper-input label="Resource URL" value="{{resourceUrl::change}}"> </paper-input>
+
+          <paper-input label="Resource ID" value="{{resourceId::change}}"> </paper-input>
+
+          <paper-textarea label="One Result" value="{{resultJson}}" rows="4"> </paper-textarea>
+        </form>
+      </template>
+
+      <script>
+        Polymer({
+          is: 'one-things-ajax',
+
+          properties: {
+            auto: {
+              type: Boolean,
+              value: true,
+            },
+
+            resourceUrl: {
+              type: String,
+              value: 'terminologies/:id',
+            },
+
+            resourceId: {
+              type: String,
+              value: '1',
+            },
+
+            ajaxResponse: {
+              type: Object,
+              observer: '_responseChanged',
+            },
+
+            resultJson: {
+              type: String,
+            },
           },
 
-          responseGet: {
-            type: Object,
-            observer: '_responseGetChanged'
+          invoke: function () {
+            if (this.resourceId && this.resourceId.length > 0) {
+              this.$.ajax.generateRequest();
+            } else {
+              this.resultJson = 'Invalid Resource ID';
+            }
           },
 
-          responsePut: {
-            type: Object,
-            observer: '_responsePutChanged'
-          }
-        },
+          reset: function () {
+            this.resultJson = '';
+          },
 
-        get: function() {
-          if(this.resourceId && this.resourceId.length > 0) {
-            this.$['get-ajax'].generateRequest();
-          } else {
-            this.resultJson = 'Invalid Resource ID';
-          }
-        },
+          _responseChanged: function (ajaxResponse) {
+            if (ajaxResponse) {
+              this.resultJson = JSON.stringify(ajaxResponse, null, 4);
+            } else {
+              this.reset();
+            }
+          },
+        });
+      </script>
+    </dom-module>
 
-        update: function() {
-          if(this.resourceId && this.resourceId.length > 0) {
-            if(this.updateJson && this.updateJson != '') {
+    <dom-module id="create-things-ajax">
+      <template>
+        <things-ajax
+          id="ajax"
+          resource-url="{{resourceUrl}}"
+          resource-action="create"
+          body="{{createJson}}"
+          last-response="{{ajaxResponse}}"
+        >
+        </things-ajax>
+
+        <form>
+          <paper-button raised on-tap="invoke">invoke</paper-button>
+          <paper-button raised on-tap="reset">reset</paper-button>
+
+          <paper-input label="Resource URL" value="{{resourceUrl::change}}"> </paper-input>
+
+          <paper-textarea label="Create Data" value="{{createJson::change}}" rows="4"> </paper-textarea>
+
+          <paper-textarea label="Create Result" value="{{resultJson}}" rows="4"> </paper-textarea>
+        </form>
+      </template>
+
+      <script>
+        Polymer({
+          is: 'create-things-ajax',
+
+          properties: {
+            resourceUrl: {
+              type: String,
+              value: 'terminologies',
+            },
+
+            createJson: {
+              type: String,
+              value: '{\n}',
+            },
+
+            resultJson: {
+              type: String,
+            },
+
+            ajaxResponse: {
+              type: Object,
+              observer: '_responseChanged',
+            },
+          },
+
+          invoke: function () {
+            if (this.createJson && this.createJson.length >= 10) {
               try {
-                JSON.parse(this.updateJson);
-                this.$['put-ajax'].generateRequest();
-              } catch(e) {
-                this.resultJson = "Error - Invalid JSON - " + e;
+                JSON.parse(this.createJson);
+                this.$.ajax.generateRequest();
+              } catch (e) {
+                this.resultJson = 'Error - Invalid JSON - ' + e;
               }
             } else {
-              this.resultJson = "Error - Empty JSON";
+              this.resultJson = 'Error - Empty JSON';
             }
-          } else {
-            this.resultJson = 'Invalid Resource ID';
-          }
-        },
+          },
 
-        reset: function() {
-          this.updateJson = '';
-          this.resultJson = '';
-        },
+          reset: function () {
+            this.resultJson = '';
+          },
 
-        _responseGetChanged: function(responsePut) {
-          if(responsePut) {
-            this.updateJson = JSON.stringify(responsePut, null, 4);
-          } else {
+          _responseChanged: function (ajaxResponse) {
+            if (ajaxResponse) {
+              this.resultJson = JSON.stringify(ajaxResponse, null, 4);
+            } else {
+              this.reset();
+            }
+          },
+        });
+      </script>
+    </dom-module>
+
+    <dom-module id="update-things-ajax">
+      <template>
+        <things-ajax
+          id="get-ajax"
+          resource-url="{{resourceUrl}}"
+          resource-action="get"
+          resource-id="{{resourceId}}"
+          last-response="{{responseGet}}"
+        >
+        </things-ajax>
+
+        <things-ajax
+          id="put-ajax"
+          resource-url="{{resourceUrl}}"
+          resource-action="update"
+          resource-id="{{resourceId}}"
+          body="{{updateJson}}"
+          last-response="{{responsePut}}"
+        >
+        </things-ajax>
+
+        <form>
+          <paper-button raised on-tap="get">get</paper-button>
+          <paper-button raised on-tap="update">update</paper-button>
+          <paper-button raised on-tap="reset">reset</paper-button>
+
+          <paper-input label="Resource URL" value="{{resourceUrl::change}}"> </paper-input>
+
+          <paper-input label="Resource Id" value="{{resourceId::change}}"> </paper-input>
+
+          <paper-textarea label="Found Data" value="{{updateJson::change}}" rows="4"> </paper-textarea>
+
+          <paper-textarea label="Update Result" value="{{resultJson::change}}" rows="4"> </paper-textarea>
+        </form>
+      </template>
+
+      <script>
+        Polymer({
+          is: 'update-things-ajax',
+
+          properties: {
+            resourceUrl: {
+              type: String,
+              value: 'terminologies/:id',
+            },
+
+            resourceId: {
+              type: String,
+            },
+
+            updateJson: {
+              type: String,
+            },
+
+            resultJson: {
+              type: String,
+            },
+
+            responseGet: {
+              type: Object,
+              observer: '_responseGetChanged',
+            },
+
+            responsePut: {
+              type: Object,
+              observer: '_responsePutChanged',
+            },
+          },
+
+          get: function () {
+            if (this.resourceId && this.resourceId.length > 0) {
+              this.$['get-ajax'].generateRequest();
+            } else {
+              this.resultJson = 'Invalid Resource ID';
+            }
+          },
+
+          update: function () {
+            if (this.resourceId && this.resourceId.length > 0) {
+              if (this.updateJson && this.updateJson != '') {
+                try {
+                  JSON.parse(this.updateJson);
+                  this.$['put-ajax'].generateRequest();
+                } catch (e) {
+                  this.resultJson = 'Error - Invalid JSON - ' + e;
+                }
+              } else {
+                this.resultJson = 'Error - Empty JSON';
+              }
+            } else {
+              this.resultJson = 'Invalid Resource ID';
+            }
+          },
+
+          reset: function () {
             this.updateJson = '';
-          }
-        },
-
-        _responsePutChanged: function(responsePut) {
-          if(responsePut) {
-            this.resultJson = JSON.stringify(responsePut, null, 4);
-          } else {
-            this.reset();
-          }
-        }
-      });
-    </script>
-  </dom-module>
-
-  <dom-module id="delete-things-ajax">
-    <template>
-      <things-ajax
-        id="ajax"
-        resource-url="{{resourceUrl}}"
-        resource-action="delete"
-        resource-id="{{resourceId}}"
-        last-response="{{ajaxResponse}}">
-      </things-ajax>
-
-      <form>
-        <paper-button raised on-tap="invoke">invoke</paper-button>
-        <paper-button raised on-tap="reset">reset</paper-button>
-
-        <paper-input label="Resource URL" value="{{resourceUrl::change}}">
-        </paper-input>
-
-        <paper-input label="Resource Id" value="{{resourceId::change}}">
-        </paper-input>        
-
-        <paper-textarea label="Delete Result" value="{{resultJson}}" rows=4>
-        </paper-textarea>
-      </form>
-    </template>
-
-    <script>
-      Polymer({
-        is: 'delete-things-ajax',
-
-        properties: {
-
-          resourceUrl : {
-            type: String,
-            value: 'terminologies/:id'
+            this.resultJson = '';
           },
 
-          resourceId: {
-            type: String
-          },
-
-          ajaxResponse: {
-            type: Object,
-            observer: '_responseChanged'
-          },
-
-          resultJson: {
-            type: String
-          }
-        },
-
-        invoke: function() {
-          if(this.resourceId && this.resourceId.length > 0) {
-            this.$.ajax.generateRequest();
-          } else {
-            this.resultJson = 'Invalid Resource ID';
-          }
-        },
-
-        reset: function() {
-          this.resultJson = '';
-        },
-
-        _responseChanged: function(ajaxResponse) {
-          if(ajaxResponse) {
-            this.resultJson = JSON.stringify(ajaxResponse, null, 4);
-            if(!this.resultJson || this.resultJson.length == 0) {
-              this.resultJson = 'OK';
+          _responseGetChanged: function (responsePut) {
+            if (responsePut) {
+              this.updateJson = JSON.stringify(responsePut, null, 4);
+            } else {
+              this.updateJson = '';
             }
-          } else {
-            this.reset();
-          }
-        }
-      });
-    </script>
-  </dom-module>  
+          },
 
-</body>
+          _responsePutChanged: function (responsePut) {
+            if (responsePut) {
+              this.resultJson = JSON.stringify(responsePut, null, 4);
+            } else {
+              this.reset();
+            }
+          },
+        });
+      </script>
+    </dom-module>
+
+    <dom-module id="delete-things-ajax">
+      <template>
+        <things-ajax
+          id="ajax"
+          resource-url="{{resourceUrl}}"
+          resource-action="delete"
+          resource-id="{{resourceId}}"
+          last-response="{{ajaxResponse}}"
+        >
+        </things-ajax>
+
+        <form>
+          <paper-button raised on-tap="invoke">invoke</paper-button>
+          <paper-button raised on-tap="reset">reset</paper-button>
+
+          <paper-input label="Resource URL" value="{{resourceUrl::change}}"> </paper-input>
+
+          <paper-input label="Resource Id" value="{{resourceId::change}}"> </paper-input>
+
+          <paper-textarea label="Delete Result" value="{{resultJson}}" rows="4"> </paper-textarea>
+        </form>
+      </template>
+
+      <script>
+        Polymer({
+          is: 'delete-things-ajax',
+
+          properties: {
+            resourceUrl: {
+              type: String,
+              value: 'terminologies/:id',
+            },
+
+            resourceId: {
+              type: String,
+            },
+
+            ajaxResponse: {
+              type: Object,
+              observer: '_responseChanged',
+            },
+
+            resultJson: {
+              type: String,
+            },
+          },
+
+          invoke: function () {
+            if (this.resourceId && this.resourceId.length > 0) {
+              this.$.ajax.generateRequest();
+            } else {
+              this.resultJson = 'Invalid Resource ID';
+            }
+          },
+
+          reset: function () {
+            this.resultJson = '';
+          },
+
+          _responseChanged: function (ajaxResponse) {
+            if (ajaxResponse) {
+              this.resultJson = JSON.stringify(ajaxResponse, null, 4);
+              if (!this.resultJson || this.resultJson.length == 0) {
+                this.resultJson = 'OK';
+              }
+            } else {
+              this.reset();
+            }
+          },
+        });
+      </script>
+    </dom-module>
+  </body>
 </html>

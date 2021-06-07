@@ -1,8 +1,8 @@
 {
     "name": "things-ajax",
-    "version": "v2.2.4",
+    "version": "v2.2.5",
     "authors": [
-        "Hatio Lab. <heartyoh@hatiolab.com>"
+        "Shenzhen Weixun"
     ],
     "description": "`things-ajax` element는 네트워크 요청 기능을 보여준다.",
     "keywords": [
@@ -11,8 +11,6 @@
         "seed"
     ],
     "main": "things-ajax.html",
-    "license": "http://license.hatiolab.com/EULA",
-    "homepage": "http://elements.hatiolab.com/",
     "ignore": [
         "/.*",
         "/test/"

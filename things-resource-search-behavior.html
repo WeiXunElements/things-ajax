@@ -1,27 +1,26 @@
 <!--
 @license
-Copyright © HatioLab Inc. All rights reserved.
+Copyright © 2015-2021 Shenzhen Weixun All rights reserved.
 -->
-<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../polymer/polymer.html" />
 
 <script>
-    window.Things = window.Things || {};
+  window.Things = window.Things || {};
 
-    /**
-     * # Things.ResourceSearchBehavior
-     * ## 해당 Behavior는 Things Framework(Elidom Framework)의 조회에 맞게
-     *
-     * ### ko-kr
-     * `Things.ResourceSearchBehavior` 리소스 검색시에 필요한 select fields, sort fields, query fields를 설정하고 서버에서 원하는 포맷에 맞춰 변경한다.
-     *
-     * @polymerBehavior Things.ResourceSearchBehavior
-     *
-     * @demo demo/index.html
-     */
-    Things.ResourceSearchBehavior = {
-
-        properties: {
-            /**
+  /**
+   * # Things.ResourceSearchBehavior
+   * ## 해당 Behavior는 Things Framework(Elidom Framework)의 조회에 맞게
+   *
+   * ### ko-kr
+   * `Things.ResourceSearchBehavior` 리소스 검색시에 필요한 select fields, sort fields, query fields를 설정하고 서버에서 원하는 포맷에 맞춰 변경한다.
+   *
+   * @polymerBehavior Things.ResourceSearchBehavior
+   *
+   * @demo demo/index.html
+   */
+  Things.ResourceSearchBehavior = {
+    properties: {
+      /**
              * 검색하고자 하는 필드명을 구분자 ','로 구분하여 설정
              *
              * select fields Ex)
@@ -29,11 +28,11 @@ Copyright © HatioLab Inc. All rights reserved.
              'id,name,description,category'
              ****
              */
-            selectFields: {
-                type: String,
-            },
+      selectFields: {
+        type: String,
+      },
 
-            /**
+      /**
 		 * 소팅하고자 하는 필드명과 ascending 여부, ascending인 경우 true, descending인 경우 false
 		 * sort fields Ex)
 ```
@@ -49,14 +48,14 @@ Copyright © HatioLab Inc. All rights reserved.
 ```
 		 ****
 		 */
-            sortFields: {
-                type: Array,
-                value: function() {
-                    return [];
-                }
-            },
+      sortFields: {
+        type: Array,
+        value: function () {
+          return [];
+        },
+      },
 
-            /**
+      /**
 		 * 검색 조건 필드명과 조건 그리고 값 오브젝트에 대한 Array
 		 *
 		 * query fields ex:)
@@ -65,7 +64,7 @@ Copyright © HatioLab Inc. All rights reserved.
   {
     "name": "name",
     "operator": "like",
-    "value": "hatio"
+    "value": "weixun"
   },
   {
     "field": "active_field",
@@ -75,98 +74,98 @@ Copyright © HatioLab Inc. All rights reserved.
 ```
 		 ****
 		 */
-            queryFields: {
-                type: Array,
-                value: function() {
-                    return [];
-                }
-            },
-
-            /**
-             * 현재 페이지
-             ****
-             */
-            page: {
-                type: Number,
-                value: 1,
-                notify: true
-            },
-
-            /**
-             * 한 페이지에 표시될 페이지 수
-             ****
-             */
-            limit: {
-                type: Number,
-                value: 50
-            }
+      queryFields: {
+        type: Array,
+        value: function () {
+          return [];
         },
+      },
 
-        /**
-         * REST API 서비스를 제공하는 서버에 보낼 파라미터를 재구성한다.
-         * 실제 서버에 요청시 이 함수에서 리턴된 파라미터가 날아간다.
-         *****
-         * @param {Object} reqParams Ajax 요청 파라미터
-         * @return {Object} 재구성된 파라미터
-         *
-         */
-        handleRequestParams: function(reqParams) {
-            var newReqParams = {};
+      /**
+       * 현재 페이지
+       ****
+       */
+      page: {
+        type: Number,
+        value: 1,
+        notify: true,
+      },
 
-            if (this.selectFields && this.selectFields.length > 0) {
-                newReqParams.select = this.selectFields;
-            }
+      /**
+       * 한 페이지에 표시될 페이지 수
+       ****
+       */
+      limit: {
+        type: Number,
+        value: 50,
+      },
+    },
 
-            if (this.sortFields && this.sortFields.length > 0) {
-                newReqParams.sort = (typeof(this.sortFields) == 'string') ? this.sortFields : JSON.stringify(this.sortFields);
-            }
+    /**
+     * REST API 서비스를 제공하는 서버에 보낼 파라미터를 재구성한다.
+     * 실제 서버에 요청시 이 함수에서 리턴된 파라미터가 날아간다.
+     *****
+     * @param {Object} reqParams Ajax 요청 파라미터
+     * @return {Object} 재구성된 파라미터
+     *
+     */
+    handleRequestParams: function (reqParams) {
+      var newReqParams = {};
 
-            if (this.queryFields && this.queryFields.length > 0) {
-                newReqParams.query = (typeof(this.queryFields) == 'string') ? this.queryFields : JSON.stringify(this.queryFields);
+      if (this.selectFields && this.selectFields.length > 0) {
+        newReqParams.select = this.selectFields;
+      }
 
-            } else if (reqParams) {
-                var queries = [];
+      if (this.sortFields && this.sortFields.length > 0) {
+        newReqParams.sort = typeof this.sortFields == 'string' ? this.sortFields : JSON.stringify(this.sortFields);
+      }
 
-                for (prop in reqParams) {
-                    var val = reqParams[prop];
-                    if (val) queries.push({
-                        name: prop,
-                        value: val
-                    });
-                }
+      if (this.queryFields && this.queryFields.length > 0) {
+        newReqParams.query = typeof this.queryFields == 'string' ? this.queryFields : JSON.stringify(this.queryFields);
+      } else if (reqParams) {
+        var queries = [];
 
-                if (queries.length > 0) {
-                    newReqParams.query = JSON.stringify(queries);
-                }
-            }
-
-            if (this.page || this.page == 0) newReqParams.page = this.page;
-            if (this.limit || this.limit == 0) newReqParams.limit = this.limit;
-            return newReqParams;
-        },
-
-        /**
-         * 커스텀 서비스를 제공하는 서버에 보낼 파라미터를 재구성한다.
-         * 실제 서버에 요청시 이 함수에서 리턴된 파라미터가 날아간다.
-         *****
-         * @param {Object} reqParams Ajax 요청 파라미터
-         * @return {Object} 재구성된 파라미터
-         */
-        handleDiyRequestParams: function(reqParams) {
-            var input = {};
-            if (this.page) input.page = this.page;
-            if (this.limit) input.limit = this.limit;
-
-            if (reqParams) {
-                for (prop in reqParams) {
-                    var val = reqParams[prop];
-                    input[prop] = val;
-                }
-            }
-
-            return {
-                input: JSON.stringify(input)
-            };
+        for (prop in reqParams) {
+          var val = reqParams[prop];
+          if (val)
+            queries.push({
+              name: prop,
+              value: val,
+            });
         }
-    };
+
+        if (queries.length > 0) {
+          newReqParams.query = JSON.stringify(queries);
+        }
+      }
+
+      if (this.page || this.page == 0) newReqParams.page = this.page;
+      if (this.limit || this.limit == 0) newReqParams.limit = this.limit;
+      return newReqParams;
+    },
+
+    /**
+     * 커스텀 서비스를 제공하는 서버에 보낼 파라미터를 재구성한다.
+     * 실제 서버에 요청시 이 함수에서 리턴된 파라미터가 날아간다.
+     *****
+     * @param {Object} reqParams Ajax 요청 파라미터
+     * @return {Object} 재구성된 파라미터
+     */
+    handleDiyRequestParams: function (reqParams) {
+      var input = {};
+      if (this.page) input.page = this.page;
+      if (this.limit) input.limit = this.limit;
+
+      if (reqParams) {
+        for (prop in reqParams) {
+          var val = reqParams[prop];
+          input[prop] = val;
+        }
+      }
+
+      return {
+        input: JSON.stringify(input),
+      };
+    },
+  };
 </script>
